@@ -1,14 +1,38 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheChanger</title>
 </head>
+
 <body>
     <h1>TheChanger</h1>
-</body>
-</html>
+    <input id="chat_input" type="text" placeholder="Nachricht hier eingeben">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        var socket = io();
+        $(document).ready(function () {
+            $('#chat_input').keypress(function (e) {
+                var key = e.which;
+                if (key == 13)  // the enter key code
+                {
+                    sendMessage();
+                    return false;
+                }
+            });
+        });
 
+        function sendMessage() {
+            let message = $("#chat_input").val();
+            $("#chat_input").val("");
+            console.log(message);
+        }
+    </script>
+</body>
+
+</html>
