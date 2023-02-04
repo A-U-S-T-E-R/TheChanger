@@ -12,6 +12,7 @@
 <body>
     <h1>TheChanger</h1>
     <input id="chat_input" type="text" placeholder="Nachricht hier eingeben">
+    <ul id="chat_output"></ul>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script>
@@ -30,8 +31,13 @@
         function sendMessage() {
             let message = $("#chat_input").val();
             $("#chat_input").val("");
-            console.log(message);
+            socket.emit("send_message", {"message": message});
+            $("#chat_output").append("<li>" + message + "</li>");
         }
+
+        socket.on("new_message", function(data) {
+            $("#chat_output").append("<li>" + data.message + "</li>");
+        });
     </script>
 </body>
 
