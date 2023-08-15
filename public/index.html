@@ -7,14 +7,73 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheChanger</title>
+    <link href="styles.css" rel="stylesheet" />
+    <link href="index.css" rel="stylesheet" />
 </head>
 
 <body>
-    <h1>TheChanger</h1>
-    <input id="chat_input" type="text" placeholder="Nachricht hier eingeben">
-    <ul id="chat_output"></ul>
+    <div id="navbar">
+        <h1>TheChanger</h1>
+        <div id="navbar_links">
+            <a onclick="addFriends();">Freunde hinzufügen</a>
+            <a>Dein Profil</a>
+            <a>Shop</a>
+            <a>Personalisierung</a>
+            <a>Einstellungen</a>
+            <a>Neuigkeiten</a>
+        </div>
+    </div>
+    <div id="sidebar">
+        <div class="sidebar_contact">
+            <div class="sidebar_contact_profile_picture"></div>
+            <p>Max Mustermann</p>
+        </div>
+        <div class="sidebar_contact_seperator"></div>
+        <div class="sidebar_contact">
+            <div class="sidebar_contact_profile_picture"></div>
+            <p>Max Mustermann</p>
+        </div>
+        <div class="sidebar_contact_seperator"></div>
+        <div class="sidebar_contact">
+            <div class="sidebar_contact_profile_picture"></div>
+            <p>Max Mustermann</p>
+        </div>
+        <div class="sidebar_contact_seperator"></div>
+        <div class="sidebar_contact">
+            <div class="sidebar_contact_profile_picture"></div>
+            <p>Max Mustermann</p>
+        </div>
+        <div class="sidebar_contact_seperator"></div>
+        <div class="sidebar_contact">
+            <div class="sidebar_contact_profile_picture"></div>
+            <p>Max Mustermann</p>
+        </div>
+        <div class="sidebar_contact_seperator"></div>
+        <div class="sidebar_contact">
+            <div class="sidebar_contact_profile_picture"></div>
+            <p>Max Mustermann</p>
+        </div>
+    </div>
+    <div id="content">
+        <div id="chat_output"></div>
+    </div>
+    <div id="baseline">
+        <input id="chat_input" type="text" placeholder="Nachricht hier eingeben"><button type="button"
+            onclick="sendMessage();">Senden</button>
+    </div>
+
+
+    <div id="friends_popup">
+        <h4>Freunde hinzufügen</h4>
+        <input id="friends_popup_input" type="text" placeholder="Nutzer suchen">
+        <ul id="friends_popup_friends"></ul>
+    </div>
+
+
+    <!-- <img id="bg_image" src="media/bg.svg"> -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="contacts.js"></script>
     <script>
         var socket = io();
         $(document).ready(function () {
@@ -26,16 +85,25 @@
                     return false;
                 }
             });
+
+            $('#friends_popup_input').keypress(function (e) {
+                var key = e.which;
+                if (key == 13)  // the enter key code
+                {
+                    searchUsers($("#friends_popup_input").val());
+                    return false;
+                }
+            });
         });
 
         function sendMessage() {
             let message = $("#chat_input").val();
             $("#chat_input").val("");
-            socket.emit("send_message", {"message": message});
+            socket.emit("send_message", { "message": message });
             $("#chat_output").append("<li>" + message + "</li>");
         }
 
-        socket.on("new_message", function(data) {
+        socket.on("new_message", function (data) {
             $("#chat_output").append("<li>" + data.message + "</li>");
         });
     </script>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="styles.css" rel="stylesheet"></link>
+    <link href="login.css" rel="stylesheet"></link>
+</head>
+<body>
+    <div id="login_section">
+        <div id="login_field">
+            <h3>Anmelden.</h3>
+            <input id="login_field_username" type="text" placeholder="Benutzernamen eingeben">
+            <input id="login_field_password" type="password" placeholder="Passwort eingeben">
+            <button type="button" onclick="sendLoginToServer();">Anmelden</button>
+        </div>
+        <div id="switch_to_register_field">
+            <p>Du hast noch keinen Account?</p>
+            <a onclick="switchForms();">Jetzt registrieren.</a>
+        </div>
+    </div>
+
+    <div id="register_section">
+        <div id="register_field">
+            <h3>Registrieren.</h3>
+            <input id="register_field_username" type="text" placeholder="Benutzernamen eingeben">
+            <input id="register_field_password1" type="password" placeholder="Passwort eingeben">
+            <input id="register_field_password2" type="password" placeholder="Passwort bestätigen">
+            <button type="button" onclick="sendRegisterToServer();">Registrieren</button>
+        </div>
+        <div id="switch_to_login_field">
+            <p>Du hast bereits einen Account?</p>
+            <a onclick="switchForms();">Jetzt anmelden.</a>
+        </div>
+    </div>
+    <img id="bg_image" src="media/bg.svg">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        var socket = io();
+
+        function sendLoginToServer() {
+            let username = document.getElementById("login_field_username").value;
+            let password = document.getElementById("login_field_password").value;
+            socket.emit("auth:login", {"username": username, "password": password});
+            localStorage.username = username;
+            localStorage.password = password;
+        }
+
+        function sendRegisterToServer() {
+            let username = document.getElementById("register_field_username").value;
+            let password1 = document.getElementById("register_field_password1").value;
+            let password2 = document.getElementById("register_field_password2").value;
+            if (password1.length < 8) {
+                alert("Das Passwort muss mind. 8 Zeichen lang sein.");
+                return;
+            }
+            // Prüfen, ob beide Passwortfelder den gleichen Inhalt haben
+            if (password1 !== password2) {
+                alert("Die Passwörter müssen übereinstimmen.");
+                return;
+            }
+            socket.emit("auth:register", {"username": username, "password": password1});
+        }
+
+        let form = 0;
+        function switchForms() {
+            if (form === 0) {
+                form = 1;
+                $("#login_section").css("display", "none");
+                $("#register_section").css("display", "block");
+            } else {
+                form = 0;
+                $("#register_section").css("display", "none");
+                $("#login_section").css("display", "block");
+            }
+        }
+
+        socket.on("auth:login:success", data => {
+            window.location.href = "/";
+        })
+        socket.on("auth:login:return", data => {
+            alert(data.message);
+        })
+        socket.on("auth:register:success", data => {
+            alert(`Ein neues Konto, frisch erstellt
+                Jetzt kann es losgehen, alles bestellt
+                Benutzerdaten sicher aufgehoben
+                Endlich Zugang zu allem, was man braucht
+
+                Mit Freude sieht man das Willkommensschild
+                Jetzt kann man sich mit der Welt verbinden
+                Endlich Teil einer großen Gemeinschaft
+                In der man sich mit anderen austauschen kann
+
+                Das Konto, ein neues Tor zur Welt
+                Jetzt kann man alles erkunden und mehr erleben
+                Es ist wie ein neues Leben, voller Möglichkeiten
+                Eine Zukunft, die man nur mit Freude erwartet.`);
+            window.location.reload();
+        })
+        socket.on("auth:register:return", data => {
+            alert(data.message);
+        })
+    </script>
+</body>
+</html>
